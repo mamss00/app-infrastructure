@@ -9,13 +9,10 @@ infra-repo/
 │   ├── ecs/                   # Cluster ECS, services, ALB
 │   ├── ecr/                   # Docker Registry
 │   ├── rds/                   # Base de données (optionnel)
-│── environments/               # Environnements
-│   ├── dev/                   # Environnement Dev
-│   │   ├── terragrunt.hcl
-│   ├── staging/               # Environnement Staging
-│   │   ├── terragrunt.hcl
-│   ├── prod/                  # Environnement Prod
-│   │   ├── terragrunt.hcl
+│── dev/                       # Environnement Dev
+│   ├── terragrunt.hcl
+│── prod/                      # Environnement Prod
+│   ├── terragrunt.hcl
 │── .github/workflows/          # Pipelines CI/CD Terraform
 │── terragrunt.hcl              # Configuration globale
 │── README.md                   # Documentation
