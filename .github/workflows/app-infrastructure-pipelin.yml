@@ -1,0 +1,60 @@
+name: "Terraform CI/CD Pipeline"
+
+on:
+  push:
+    branches:
+      - dev
+      - prod
+    paths:
+      - '**.tf'
+      - '**.hcl'
+  pull_request:
+    branches:
+      - dev
+      - prod
+    paths:
+      - '**.tf'
+      - '**.hcl'
+
+jobs:
+  terraform:
+    name: "Terraform Plan & Apply"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      - name: Terragrunt Format & Validate
+        run: |
+          terragrunt fmt -recursive
+          terragrunt validate
+
+      - name: Terraform Plan (Dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          cd environments/dev
+          terragrunt plan
+
+      - name: Terraform Apply (Dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          cd environments/dev
+          terragrunt apply -auto-approve
+
+      - name: Terraform Plan (Prod)
+        if: github.ref == 'refs/heads/prod'
+        run: |
+          cd environments/prod
+          terragrunt plan
+
+      - name: Terraform Apply (Prod - Requires Manual Approval)
+        if: github.ref == 'refs/heads/prod' && github.event_name == 'workflow_dispatch'
+        run: |
+          cd environments/prod
+          terragrunt apply -auto-approve
