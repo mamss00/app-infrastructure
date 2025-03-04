@@ -8,6 +8,7 @@ on:
     paths:
       - '**.tf'
       - '**.hcl'
+      - '**.yml'
   pull_request:
     branches:
       - dev
@@ -15,6 +16,7 @@ on:
     paths:
       - '**.tf'
       - '**.hcl'
+      - '**.yml'
   workflow_dispatch:  # Ajout du déclencheur manuel
 
 jobs:
