@@ -30,6 +30,12 @@ jobs:
         with:
           terraform_version: latest
 
+      - name: Install Terragrunt  # ✅ Étape ajoutée pour installer Terragrunt
+        run: |
+          curl -L -o terragrunt https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
+          chmod +x terragrunt
+          sudo mv terragrunt /usr/local/bin/
+          
       - name: Terragrunt Format & Validate
         run: |
           terragrunt fmt -recursive
