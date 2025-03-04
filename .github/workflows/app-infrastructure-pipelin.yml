@@ -1,5 +1,4 @@
 name: "Terraform CI/CD Pipeline"
-
 on:
   push:
     branches:
@@ -15,54 +14,57 @@ on:
     paths:
       - '**.tf'
       - '**.hcl'
+  workflow_dispatch:  # Ajout du déclencheur manuel pour les approbations manuelles
 
 jobs:
   terraform:
     name: "Terraform Plan & Apply"
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: latest
-
-      - name: Install Terragrunt  # ✅ Étape ajoutée pour installer Terragrunt
+      
+      - name: Install Terragrunt
         run: |
           curl -L -o terragrunt https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
           chmod +x terragrunt
           sudo mv terragrunt /usr/local/bin/
-
+      
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
-
+      
+      # Environnement DEV
       - name: Terraform Plan (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
           cd environments/dev
           terragrunt plan
-
+      
       - name: Terraform Apply (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
           cd environments/dev
           terragrunt apply -auto-approve
-
+      
+      # Environnement PROD
       - name: Terraform Plan (Prod)
         if: github.ref == 'refs/heads/prod'
         run: |
           cd environments/prod
           terragrunt plan
-
-      - name: Terraform Apply (Prod - Requires Manual Approval)
-        if: github.ref == 'refs/heads/prod' && github.event_name == 'workflow_dispatch'
+      
+      - name: Terraform Apply (Prod)
+        # Exécution conditionnelle : soit sur push vers prod, soit sur déclenchement manuel
+        if: github.ref == 'refs/heads/prod'
         run: |
           cd environments/prod
           terragrunt apply -auto-approve
