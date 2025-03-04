@@ -9,6 +9,7 @@ on:
       - '**.tf'
       - '**.hcl'
       - '**.yml'
+      - '**.yaml'
   pull_request:
     branches:
       - dev
@@ -17,6 +18,7 @@ on:
       - '**.tf'
       - '**.hcl'
       - '**.yml'
+      - '**.yaml'
   workflow_dispatch:  # Ajout du déclencheur manuel
 
 jobs:
@@ -30,39 +32,37 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Debug - List files  # ✅ Vérifier si environments/dev et environments/prod existent
+      - name: Debug - Check directory structure  # ✅ Vérifier la présence des dossiers
         run: ls -R
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: latest
-
-      - name: Install Terragrunt
+      - name: Install Terraform & Terragrunt Properly  # ✅ Installation propre
         run: |
+          sudo apt-get update && sudo apt-get install -y unzip
+          curl -L -o terraform.zip https://releases.hashicorp.com/terraform/1.5.5/terraform_1.5.5_linux_amd64.zip
+          unzip terraform.zip
+          sudo mv terraform /usr/local/bin/
           curl -L -o terragrunt https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_amd64
           chmod +x terragrunt
           sudo mv terragrunt /usr/local/bin/
+          terraform --version
+          terragrunt --version
 
       # Environnement DEV
       - name: Terraform Plan (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          cd dev
-          terragrunt plan
+          if [ -d "environments/dev" ]; then cd environments/dev && terragrunt run-all plan --terragrunt-config root.hcl; else echo "❌ ERROR: Directory environments/dev not found!"; exit 1; fi
 
       - name: Terraform Apply (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          cd dev
-          terragrunt apply -auto-approve
+          if [ -d "environments/dev" ]; then cd environments/dev && terragrunt run-all apply --terragrunt-config root.hcl -auto-approve; else echo "❌ ERROR: Directory environments/dev not found!"; exit 1; fi
 
       # Environnement PROD - Plan uniquement
       - name: Terraform Plan (Prod)
         if: github.ref == 'refs/heads/prod'
         run: |
-          cd prod
-          terragrunt plan
+          if [ -d "environments/prod" ]; then cd environments/prod && terragrunt run-all plan --terragrunt-config root.hcl; else echo "❌ ERROR: Directory environments/prod not found!"; exit 1; fi
 
   deploy_prod:
     name: "Apply Prod (Manual Approval)"
@@ -83,5 +83,4 @@ jobs:
 
       - name: Terraform Apply (Prod - Requires Approval)
         run: |
-          cd prod
-          terragrunt apply -auto-approve
+          if [ -d "environments/prod" ]; then cd environments/prod && terragrunt run-all apply --terragrunt-config root.hcl -auto-approve; else echo "❌ ERROR: Directory environments/prod not found!"; exit 1; fi

@@ -1,5 +1,5 @@
 locals {
-  base_config = yamldecode(file("${get_terragrunt_dir()}/../common/config/base_security_groups.yaml"))
+  base_config = yamldecode(file("${get_terragrunt_dir()}/../../common/config/base_security_groups.yaml"))
   env_config  = yamldecode(file("${get_terragrunt_dir()}/config/security_groups.yaml"))
 
   # Fusionner la configuration globale avec celle de l’environnement
