@@ -46,20 +46,20 @@ jobs:
       - name: Terraform Plan (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          cd environments/dev
+          cd dev
           terragrunt plan
 
       - name: Terraform Apply (Dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          cd environments/dev
+          cd dev
           terragrunt apply -auto-approve
 
       # Environnement PROD - Plan uniquement
       - name: Terraform Plan (Prod)
         if: github.ref == 'refs/heads/prod'
         run: |
-          cd environments/prod
+          cd prod
           terragrunt plan
 
   deploy_prod:
@@ -81,5 +81,5 @@ jobs:
 
       - name: Terraform Apply (Prod - Requires Approval)
         run: |
-          cd environments/prod
+          cd prod
           terragrunt apply -auto-approve
