@@ -15,4 +15,4 @@ infra-repo/
 │   ├── terragrunt.hcl
 │── .github/workflows/          # Pipelines CI/CD Terraform
 │── terragrunt.hcl              # Configuration globale
-│── README.md                   # Documentation
+│── README.md                   # Documentations
