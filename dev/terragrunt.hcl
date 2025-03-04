@@ -15,5 +15,5 @@ include "networking" {
 }
 
 inputs = {
-  environment = "dev-infrastructure"
+  environment = "dev-infra"
 }
