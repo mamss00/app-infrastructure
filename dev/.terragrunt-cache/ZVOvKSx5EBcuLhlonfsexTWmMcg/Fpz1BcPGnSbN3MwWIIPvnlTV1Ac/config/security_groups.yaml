@@ -1,0 +1,30 @@
+# security_groups.yaml
+# Définition des Security Groups spécifiques à un environnement (ex: dev, staging, prod)
+
+nat:
+  ingress_rules:
+    - from_port: 22
+      to_port: 22
+      protocol: tcp
+      cidr_blocks: ["0.0.0.0/0"]
+  egress_rules:
+    - from_port: 0
+      to_port: 0
+      protocol: "-1"
+      cidr_blocks: ["0.0.0.0/0"]
+
+ec2:
+  ingress_rules:
+    - from_port: 443
+      to_port: 443
+      protocol: tcp
+      cidr_blocks: ["0.0.0.0/0"]
+    - from_port: 8080
+      to_port: 8080
+      protocol: tcp
+      cidr_blocks: ["0.0.0.0/0"]
+  egress_rules:
+    - from_port: 0
+      to_port: 0
+      protocol: "-1"
+      cidr_blocks: ["0.0.0.0/0"]

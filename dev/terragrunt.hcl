@@ -1,17 +1,19 @@
 terraform {
-  source = "../modules/networking"
+  source = "${get_repo_root()}/modules/networking"
 }
 
 include {
   path = find_in_parent_folders()
 }
 
+include "security_groups" {
+  path = "${get_terragrunt_dir()}/security_groups.hcl"
+}
+
+include "networking" {
+  path = "${get_terragrunt_dir()}/networking.hcl"
+}
+
 inputs = {
-  environment         = "dev"
-  vpc_cidr           = "10.0.0.0/16"
-  public_subnet_cidr = "10.0.1.0/24"
-  private_subnet_cidr = "10.0.2.0/24"
-  availability_zone  = "eu-central-1a"
-  instance_type      = "t2.micro"
-  allowed_ingress_ports = [80, 443, 22]
+  environment = "dev"
 }

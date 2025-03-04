@@ -8,20 +8,21 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "public_subnet_cidr" {
-  description = "CIDR block pour le subnet public"
-  type        = string
+variable "public_subnets_cidrs" {
+  description = "Liste des CIDR pour les subnets publics"
+  type        = list(string)
 }
 
-variable "private_subnet_cidr" {
-  description = "CIDR block pour le subnet privé"
-  type        = string
+variable "private_subnets_cidrs" {
+  description = "Liste des CIDR pour les subnets privés"
+  type        = list(string)
 }
 
-variable "availability_zone" {
-  description = "Zone de disponibilité AWS"
-  type        = string
+variable "availability_zones" {
+  description = "Liste des zones de disponibilité où créer les subnets"
+  type        = list(string)
 }
+
 
 variable "instance_type" {
   description = "Type d'instance pour l'instance NAT gratuite"
@@ -29,8 +30,21 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "allowed_ingress_ports" {
-  description = "Liste des ports autorisés pour l'accès entrant"
-  type        = list(number)
-  default     = [80, 443, 22]
+# Configuration dynamique des Security Groups
+variable "security_groups" {
+  description = "Définition des Security Groups dynamiques"
+  type = map(object({
+    ingress_rules = list(object({
+      from_port   = number
+      to_port     = number
+      protocol    = string
+      cidr_blocks = list(string)
+    }))
+    egress_rules = list(object({
+      from_port   = number
+      to_port     = number
+      protocol    = string
+      cidr_blocks = list(string)
+    }))
+  }))
 }
